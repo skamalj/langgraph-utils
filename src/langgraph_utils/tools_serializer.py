@@ -16,7 +16,7 @@ def create_tools_json(tools):
             'args_schema': tool.args_schema.model_json_schema()
         }
         tools_json.append(tool_info)
-    return json.dumps(tools_json)
+    return tools_json
 
 
 
