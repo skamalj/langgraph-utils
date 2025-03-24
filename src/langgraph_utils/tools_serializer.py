@@ -1,4 +1,6 @@
 from langchain_core.tools import StructuredTool
+from langchain_core.prompt_values import ChatPromptValue
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage, SystemMessage
 import json
 import os
 import requests
@@ -89,3 +91,37 @@ def call_model(llm, provider, messages, tools=None, params={}):
         return response.json()
     except requests.RequestException as e:
         raise RuntimeError(f"Error while calling LLM API: {e}")
+    
+
+def messages_to_chatprompt(message_dicts):
+    """
+    Convert a list of message dictionaries to a ChatPromptValue object.
+
+    Args:
+        message_dicts (list): List of dictionaries with 'type' and 'content'.
+
+    Returns:
+        ChatPromptValue: A ChatPromptValue object containing the messages.
+    """
+    message_map = {
+        'human': HumanMessage,
+        'ai': AIMessage,
+        'tool': ToolMessage,
+        'system': SystemMessage
+    }
+
+    messages = []
+
+    for msg in message_dicts:
+        msg_type = msg.get('type')
+        content = msg.get('content')
+
+        if msg_type not in message_map:
+            raise ValueError(f"Invalid message type: {msg_type}")
+
+        # Create corresponding message object
+        message_class = message_map[msg_type]
+        messages.append(message_class(**msg))
+
+    # Convert to ChatPromptValue
+    return ChatPromptValue(messages=messages)
