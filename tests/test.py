@@ -75,7 +75,7 @@ tools = [add_numbers, generate_hash]
 json_tools = create_tools_json(tools)
 import json
 tools_from_json = json_to_structured_tools(json_tools)
-messages = utils.convert_to_openai_messages([HumanMessage("whats 23 plus 74")])
+messages = [HumanMessage("whats 23 plus 74")]
 
 response = call_model("gpt-4o", "openai", tools=json_tools, messages=messages)
 from langchain_core.prompt_values import ChatPromptValue

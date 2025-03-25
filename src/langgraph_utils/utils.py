@@ -60,14 +60,14 @@ def call_model(llm, provider, messages, tools=None, params={}):
     - params (dict, optional): Additional parameters for the LLM call (e.g., temperature, max tokens).
 
     Returns:
-    - dict: The JSON response from the API.
+    - AIMessage object: The response from the LLM API.
     """
     # Prepare the payload for the API request
     data = {
         "provider": provider,
         "model_name": llm,
         "params": params,
-        "messages": messages,
+        "messages": [msg.model_dump() for msg in messages],
         "tools": tools
     }
 
@@ -88,7 +88,8 @@ def call_model(llm, provider, messages, tools=None, params={}):
         # Send a POST request to the API Gateway
         response = requests.post(api_url, headers=headers, json=data)
         response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
-        return response.json()
+        ai_message = AIMessage(**response.json())
+        return ai_message
     except requests.RequestException as e:
         raise RuntimeError(f"Error while calling LLM API: {e}")
     
