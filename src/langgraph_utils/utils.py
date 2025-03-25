@@ -1,5 +1,5 @@
 from langchain_core.tools import StructuredTool
-from langchain_core.prompt_values import ChatPromptValue
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage, SystemMessage
 import json
 import os
@@ -125,4 +125,4 @@ def messages_to_chatprompt(message_dicts):
         messages.append(message_class(**msg))
 
     # Convert to ChatPromptValue
-    return ChatPromptValue(messages=messages)
+    return ChatPromptTemplate.from_messages(messages)
