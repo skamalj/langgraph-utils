@@ -14,13 +14,24 @@ Converts a list of langchain tool objects into a JSON string.
 def create_tools_json(tools):
     tools_json = []
     for tool in tools:
+        schema = tool.args_schema
+
+        if hasattr(schema, "model_json_schema"):
+            args_schema = schema.model_json_schema()
+        elif isinstance(schema, dict):
+            args_schema = schema
+        else:
+            raise TypeError(f"Unsupported args_schema type: {type(schema)}")
+
         tool_info = {
-            'name': tool.name,
-            'description': tool.description,
-            'args_schema': tool.args_schema.model_json_schema()
+            "name": tool.name,
+            "description": tool.description,
+            "args_schema": args_schema
         }
         tools_json.append(tool_info)
+
     return tools_json
+
 
 
 
